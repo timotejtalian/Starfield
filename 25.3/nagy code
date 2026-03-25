@@ -1,0 +1,47 @@
+#prevod obsahu spravy do inej abeedy pomocou kluca
+#zaklad je verejny
+#sifrovanie symetricke - pouzivame ten isty kluc na sifrovanie aj desifrovanie
+#sifrovanie asymetricke - pouzivame par klucov, verejny a sukromny, verejny sa pouziva na sifrovanie a sukromny na desifrovanie
+#steganografia - ukryvanie spravy v inom texte, obrazku, zvuku
+# sprava'ahoj' 
+# > priradenie ciselnej hodnoty z ascii 
+# > prevedenie na bity (7) 
+# > skontrolovat ci dlyka kodovania je 7 bitov 
+# > 11011000 
+# > 7 pixeov na znak > treba urcit jednu farbu z rgb toho pixelu do ktorej budeme kodovat 
+# > modra 
+# > prevedies hodnotu farby do 2 sustavy 
+# > zmenime posledny bit
+
+import PIL
+from PIL import Image
+import pip
+obr = Image.open(r'C:\Users\annak\Desktop\SKOLA\slcwpb2lu8wa1.png')
+sprava = input("Zadaj správu: ")
+
+def sprava_to_bin(sprava):
+    sprava += '#'
+    output = "" 
+    for char in sprava:
+        temp =  bin(ord(char))[2::]
+        if len(temp) < 7:
+            pocet = 7 - len(temp)
+            temp = '0' * pocet + temp
+        output += temp
+    return output           
+
+def picture_shreder(bs, obr):
+    pixels = obr.load()
+    for i in range(len(bs)):
+        x = i % obr.size[0]
+        y = i // obr.size[0]
+        blue_bin = bin(pixels[x, y][2])[2:-1:]# ta 2 odtrhne 0b, -1 odtrhne posledny bit
+        blue_bin = blue_bin + bs[i]
+        new_blue = int(blue_bin, 2)
+        pixels[x,y] = (pixels[x,y][0], pixels[x,y][1], new_blue)
+    obr.save('jupi.png')
+
+
+
+bin_sprava = sprava_to_bin(sprava)
+picture_shreder(bin_sprava, obr)
